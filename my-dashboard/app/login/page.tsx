@@ -1,14 +1,15 @@
-"use client"; // Must be client to use hooks/searchParams
+"use client"; 
 
 import { authenticate } from "@/lib/actions";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react"; // <--- 1. Import Suspense
 import { Lock, Mail, Shield, User } from "lucide-react";
 
-export default function LoginPage() {
+// 2. Rename your main logic component to "LoginContent" (not default export yet)
+function LoginContent() {
   const searchParams = useSearchParams();
-  const role = searchParams.get("role") || "USER"; // Default to USER if empty
+  const role = searchParams.get("role") || "USER"; 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -49,8 +50,6 @@ export default function LoginPage() {
         </div>
 
         <form action={handleSubmit} className="mt-8 space-y-6">
-          
-          {/* 🔒 HIDDEN INPUT TO PASS ROLE TO SERVER */}
           <input type="hidden" name="expectedRole" value={role} />
 
           <div className="space-y-4 rounded-md shadow-sm">
@@ -93,7 +92,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Show Signup ONLY if trying to login as USER */}
         {!isAdmin && (
           <div className="text-center text-sm">
             <span className="text-gray-500">New here? </span>
@@ -103,7 +101,6 @@ export default function LoginPage() {
           </div>
         )}
         
-        {/* Back Link */}
         <div className="text-center mt-4">
            <Link href="/" className="text-xs text-gray-400 hover:text-gray-600">
               ← Back to role selection
@@ -111,5 +108,15 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 3. Create the new Default Export wrapped in Suspense
+export default function LoginPage() {
+  return (
+    // Fallback shows while the URL params are being read
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
