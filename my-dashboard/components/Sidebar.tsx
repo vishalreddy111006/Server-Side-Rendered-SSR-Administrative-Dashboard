@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, Package, ShoppingCart, Users, LogOut } from "lucide-react";
 import { handleLogout } from "@/lib/actions";
 
-// Removed "Settings" from this array
+// ✅ Settings is REMOVED from this list
 const routes = [
   {
     label: "Dashboard",
@@ -20,7 +20,7 @@ const routes = [
     color: "text-violet-500",
   },
   {
-    label: "Orders", // Placeholder link
+    label: "Orders",
     icon: ShoppingCart,
     href: "/dashboard/orders",
     color: "text-pink-700",
@@ -60,7 +60,6 @@ export default function Sidebar() {
         </div>
       </div>
       
-      {/* Logout Button at the bottom */}
       <div className="px-3 py-2">
          <form action={handleLogout}>
             <button className="text-sm group flex p-3 w-full justify-start font-medium cursor-pointer text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition">
