@@ -87,6 +87,13 @@ Start the development server:
 Bash
 npm run dev
 Open http://localhost:3000 in your browser to view the dashboard.
+```
+## Dummy Super Admin Credentials:
+ id - admin@demo.com
+ password - admin123
+## Dummy Admin Credentials:
+ id - new.admin@company.com
+ password - newadmin
 
 
 
