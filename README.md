@@ -94,6 +94,8 @@ Open http://localhost:3000 in your browser to view the dashboard.
 ## Dummy Admin Credentials:
  id - new.admin@company.com
  password - newadmin
-
+## Dummy User Credentials:
+ id - user@demo.com
+ password - user123
 
 
