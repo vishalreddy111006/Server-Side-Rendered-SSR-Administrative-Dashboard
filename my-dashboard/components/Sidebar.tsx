@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, Package, ShoppingCart, Users, LogOut } from "lucide-react";
 import { handleLogout } from "@/lib/actions";
 
-// ✅ Settings is REMOVED from this list
 const routes = [
   {
     label: "Dashboard",
