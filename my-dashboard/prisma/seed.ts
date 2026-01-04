@@ -4,8 +4,10 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  const password = await bcrypt.hash('admin123', 10);
+  console.log("🌱 Starting seed...");
 
+  // --- 1. SETUP ADMIN ---
+  const password = await bcrypt.hash('admin123', 10);
   const user = await prisma.user.upsert({
     where: { email: 'admin@demo.com' },
     update: {},
@@ -15,24 +17,71 @@ async function main() {
       role: 'SUPER_ADMIN',
     },
   });
+  console.log(`👤 Admin configured: ${user.email}`);
 
-  console.log({ user });
-
-    const categories = [
+  // --- 2. SETUP CATEGORIES ---
+  const categories = [
     { name: 'Electronics' },
     { name: 'Clothing' },
     { name: 'Books' },
     { name: 'Home & Garden' },
-    ];
+  ];
 
-    for (const cat of categories) {
-        await prisma.category.create({
-        data: cat,
-        });
+  // Using upsert loop to prevent "Unique constraint" errors if you run seed twice
+  for (const cat of categories) {
+    // Check if exists first to avoid duplicates (simple check)
+    const existing = await prisma.category.findFirst({ where: { name: cat.name } });
+    if (!existing) {
+      await prisma.category.create({ data: cat });
     }
-    console.log('Created Categories');
-}
+  }
+  console.log('📦 Categories configured');
 
+  // --- 3. GENERATE FAKE ORDERS (NEW) ---
+  const users = await prisma.user.findMany();
+  const products = await prisma.product.findMany();
+
+  if (users.length === 0 || products.length === 0) {
+    console.log("⚠️ Skipping Order generation: You need at least 1 User and 1 Product.");
+    return;
+  }
+
+  console.log("🛒 Generating 20 fake orders...");
+  
+  for (let i = 0; i < 20; i++) {
+    // Pick a random user
+    const randomUser = users[Math.floor(Math.random() * users.length)];
+    
+    // Pick 1-3 random products
+    const randomProducts = products
+      .sort(() => 0.5 - Math.random())
+      .slice(0, Math.floor(Math.random() * 3) + 1);
+
+    // Calculate total price
+    const total = randomProducts.reduce((sum, p) => sum + p.price, 0);
+
+    // Create the Order
+    await prisma.order.create({
+      data: {
+        userId: randomUser.id,
+        // Random Status
+        status: ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"][Math.floor(Math.random() * 4)],
+        total: total,
+        // Random Date (within last 3 months)
+        createdAt: new Date(Date.now() - Math.floor(Math.random() * 7776000000)), 
+        items: {
+          create: randomProducts.map((p) => ({
+            productId: p.id,
+            name: p.name,
+            price: p.price,
+            quantity: 1,
+          })),
+        },
+      },
+    });
+  }
+  console.log("✅ 20 Orders generated successfully");
+}
 
 main()
   .then(async () => {
