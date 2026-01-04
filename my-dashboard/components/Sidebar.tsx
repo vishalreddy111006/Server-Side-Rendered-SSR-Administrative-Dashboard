@@ -2,76 +2,74 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, ShoppingCart, Settings, LogOut, Shield, X } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { LayoutDashboard, Package, ShoppingCart, Users, LogOut } from "lucide-react";
+import { handleLogout } from "@/lib/actions";
 
-interface SidebarProps {
-  onClose?: () => void;
-  userRole?: string;
-}
+// Removed "Settings" from this array
+const routes = [
+  {
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/dashboard",
+    color: "text-sky-500",
+  },
+  {
+    label: "Products",
+    icon: Package,
+    href: "/dashboard/products",
+    color: "text-violet-500",
+  },
+  {
+    label: "Orders", // Placeholder link
+    icon: ShoppingCart,
+    href: "/dashboard/orders",
+    color: "text-pink-700",
+  },
+  {
+    label: "Admins",
+    icon: Users,
+    href: "/dashboard/admins",
+    color: "text-orange-700",
+  },
+];
 
-export function Sidebar({ onClose, userRole }: SidebarProps) {
+export default function Sidebar() {
   const pathname = usePathname();
 
-  const routes = [
-    // Everyone sees these
-    { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-    { label: "Products", icon: Package, href: "/dashboard/products" },
-    
-    // Only ADMIN and SUPER_ADMIN see Orders
-    ...(userRole !== "USER" ? [{ 
-      label: "Orders", icon: ShoppingCart, href: "/dashboard/orders" 
-    }] : []),
-
-    // Only SUPER_ADMIN sees Admins
-    ...(userRole === "SUPER_ADMIN" ? [{ 
-      label: "Admins", icon: Shield, href: "/dashboard/admins" 
-    }] : []),
-
-    // Only ADMIN and SUPER_ADMIN see Settings
-    ...(userRole !== "USER" ? [{ 
-      label: "Settings", icon: Settings, href: "/dashboard/settings" 
-    }] : []),
-  ];
-
   return (
-    <div className="flex h-full flex-col bg-slate-900 text-white w-64">
-      {/* ... (Header remains the same) ... */}
-      <div className="flex items-center justify-between p-6">
-        <h1 className="text-2xl font-bold tracking-wider">
-          {userRole === 'USER' ? 'STORE' : 'ADMIN'}
-        </h1>
-        <button onClick={onClose} className="md:hidden text-gray-400 hover:text-white">
-          <X className="h-6 w-6" />
-        </button>
+    <div className="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
+      <div className="px-3 py-2 flex-1">
+        <Link href="/dashboard" className="flex items-center pl-3 mb-14">
+          <h1 className="text-2xl font-bold">ADMIN</h1>
+        </Link>
+        <div className="space-y-1">
+          {routes.map((route) => (
+            <Link
+              key={route.href}
+              href={route.href}
+              className={`text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition ${
+                pathname === route.href ? "text-white bg-white/10" : "text-zinc-400"
+              }`}
+            >
+              <div className="flex items-center flex-1">
+                <route.icon className={`h-5 w-5 mr-3 ${route.color}`} />
+                {route.label}
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
-
-      <div className="flex-1 px-4 space-y-2">
-        {routes.map((route) => (
-          <Link
-            key={route.href}
-            href={route.href}
-            onClick={onClose}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-              pathname === route.href
-                ? "bg-blue-600 text-white shadow-md"
-                : "text-gray-400 hover:bg-slate-800 hover:text-white"
-            }`}
-          >
-            <route.icon className="h-5 w-5" />
-            <span className="font-medium">{route.label}</span>
-          </Link>
-        ))}
-      </div>
-
-      <div className="p-4 border-t border-slate-800">
-        <button 
-          onClick={() => signOut({ callbackUrl: "/login" })} 
-          className="flex w-full items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-lg transition-colors"
-        >
-          <LogOut className="h-5 w-5" />
-          <span className="font-medium">Logout</span>
-        </button>
+      
+      {/* Logout Button at the bottom */}
+      <div className="px-3 py-2">
+         <form action={handleLogout}>
+            <button className="text-sm group flex p-3 w-full justify-start font-medium cursor-pointer text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition">
+               <div className="flex items-center flex-1">
+                  <LogOut className="h-5 w-5 mr-3 text-red-500" />
+                  Logout
+               </div>
+            </button>
+         </form>
       </div>
     </div>
   );
