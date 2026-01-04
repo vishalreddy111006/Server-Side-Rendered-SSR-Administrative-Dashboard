@@ -49,12 +49,12 @@ A robust, full-stack administrative dashboard built with **Next.js 15 (App Route
  ├── prisma/
  │   └── schema.prisma    # Database schema definition
  └── public/              # Static assets   
-
+```
 ## ⚙️ Setup & Installation Instructions
 
 Follow these steps to set up the project locally.
-1. Clone the Repository
 ```bash
+1. Clone the Repository
 git clone [https://github.com/vishalreddy111006/Server-Side-Rendered-SSR-Administrative-Dashboard.git](https://github.com/vishalreddy111006/Server-Side-Rendered-SSR-Administrative-Dashboard.git)
 cd Server-Side-Rendered-SSR-Administrative-Dashboard/my-dashboard
 
@@ -87,5 +87,6 @@ Start the development server:
 Bash
 npm run dev
 Open http://localhost:3000 in your browser to view the dashboard.
+
 
 
