@@ -286,3 +286,37 @@ export async function registerUser(formData: FormData) {
 
   redirect("/login");
 }
+
+// ... (keep all your existing imports and code)
+
+// --- User Management Actions ---
+
+export async function deleteUser(formData: FormData) {
+  // 1. Security Check: Only SUPER_ADMIN can delete users
+  const session = await auth();
+  const currentUserRole = (session?.user as any)?.role;
+  const currentUserId = (session?.user as any)?.id; // Assuming you have ID in session
+  
+  if (currentUserRole !== "SUPER_ADMIN") {
+     throw new Error("Unauthorized: Only Super Admins can delete users.");
+  }
+
+  const targetUserId = formData.get("id") as string;
+
+  // 2. Safety Check: Prevent deleting yourself
+  if (targetUserId === currentUserId) {
+     // Ideally handle this gracefully, but for now we just return
+     console.error("Cannot delete yourself.");
+     return; 
+  }
+
+  try {
+    await prisma.user.delete({
+      where: { id: targetUserId },
+    });
+    revalidatePath("/dashboard/admins");
+  } catch (error) {
+    console.error("Failed to delete user:", error);
+    throw new Error("Failed to delete user.");
+  }
+}
