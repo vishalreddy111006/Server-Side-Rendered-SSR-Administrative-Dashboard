@@ -88,6 +88,9 @@ Bash
 npm run dev
 Open http://localhost:3000 in your browser to view the dashboard.
 ```
+
+## Working Video:
+   drive-https://drive.google.com/file/d/1X-XdqtMufztLUSjoCgMC9TQTH8NPaK7q/view?usp=sharing
 ## Dummy Super Admin Credentials:
  id - admin@demo.com
  password - admin123
